@@ -4,7 +4,7 @@ import optparse
 
 import re
 
-#regex 101 kullanımı için
+#regex kullanımı için
 
 
 
