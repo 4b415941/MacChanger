@@ -1,77 +1,48 @@
 import subprocess
-
+import random
 import optparse
-
 import re
-
-#regex kullanımı için
-
-
+import time
 
 def get_user_input():
-
     parse_object = optparse.OptionParser()
-
-    parse_object.add_option("-i","--interface",dest="interface",help="interface to change")
-
-    parse_object.add_option("-m","--mac",dest="mac_address",help="get new mac address")
-
-
-
+    parse_object.add_option("-i","--interface",dest="interface",help="enter interface")
     return parse_object.parse_args()
 
-
-
-#interface = "eth0"
-
-#mac_address="00:22:33:55:77:88"
-
-
+def get_new_mac():
+    charList = "123456789ABCDEF"
+    new_mac = ""
+    for i in range(12):
+        new_mac += random.choice(charList)
+        if (i+1)%2 == 0 and (i != 11):
+            new_mac += ":"
+    return new_mac
 
 def change_mac_address(user_interface,user_mac_address):
-
     subprocess.call(["ifconfig",user_interface,"down"])
-
     subprocess.call(["ifconfig",user_interface,"hw","ether",user_mac_address])
-
     subprocess.call(["ifconfig",user_interface,"up"])
+    time.sleep(1)
 
-
-
-def control_new_mac(interface):
-
-    ifconfig = subprocess.check_output(["ifconfig",interface])
-
-    new_mac = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w",str(ifconfig))
-
-    if new_mac:
-
-        return new_mac.group(0) #bu grup içinde gelen ilk sonucu bana döndür "0" string olarak döndürmediği için.
-
-    else:
-
+def control_mac_address(interface):
+    try:
+        result = subprocess.run(["ip", "link", "show", interface], capture_output=True, text=True, check=True)
+        mac_address = re.search(r"ether\s+([0-9a-fA-F:]+)", result.stdout).group(1)
+        return mac_address
+    except Exception as e:
+        print("Error:", e)
         return None
 
+user_input,args = get_user_input()
+generated_mac = get_new_mac()
+change_mac_address(user_input.interface,generated_mac)
+time.sleep(1)
+finalized_mac = control_mac_address(user_input.interface)
 
-
-print("MyMacChanger Started!")
-
-
-
-(user_input,arguments) = get_user_input() #tuple olarak kaydettiği için.
-
-change_mac_address(user_input.interface,user_input.mac_address)
-
-
-
-finalized_mac = control_new_mac(str(user_input.interface))
-
-
-
-if finalized_mac == user_input.mac_address:
-
-    print("Success")
-
+if finalized_mac is not None:
+    if finalized_mac == generated_mac:
+        print("Success!!!")
+    else:
+        print("Error!!!",finalized_mac)
 else:
-
-    print("error")
+    print("Error: MAC address couldn't be retrieved.")
