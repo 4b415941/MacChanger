@@ -1,74 +1,74 @@
 import random
 
-savascı = {
-    "güc": 85,
-    "can": 1500,
-    "zırh": 30
+warrior = {
+    "power": 85,
+    "health": 1500,
+    "armor": 30
 }
 
-büyücü = {
-    "güc": 120,
-    "can": 800,
-    "zırh": 10,
-    "büyü_kalkanı": False
+wizard = {
+    "power": 120,
+    "health": 800,
+    "armor": 10,
+    "magic_shield": False
 }
 
-def vur(vuran: dict, vurulan: dict, kritik=False):
-    if vurulan.get("büyü_kalkanı", False):
-        print("Büyücü kalkanını kullandı ve saldırıyı blokladı!")
+def attack(attacker: dict, target: dict, critical=False):
+    if target.get("magic_shield", False):
+        print("Wizard used magic shield and blocked the attack!")
         return
 
-    if kritik:
-        hasar = vuran["güc"] * 2 - vurulan["zırh"]
+    if critical:
+        damage = attacker["power"] * 2 - target["armor"]
     else:
-        hasar = vuran["güc"] - vurulan["zırh"]
+        damage = attacker["power"] - target["armor"]
 
-    if hasar < 0:
-        hasar = 0
+    if damage < 0:
+        damage = 0
 
-    if vurulan["can"] < hasar:
-        vurulan["can"] = 0
+    if target["health"] < damage:
+        target["health"] = 0
     else:
-        vurulan["can"] -= hasar
+        target["health"] -= damage
 
-print("Savaşçı : ", savascı)
-print("Büyücü : ", büyücü)
+print("Warrior: ", warrior)
+print("Wizard: ", wizard)
 
-while savascı["can"] > 0 and büyücü["can"] > 0:
-    input("Vurmak için enter'a basınız!")
-    kritik_vurus = random.choice([True, False])  # Kritik vuruş için rastgele seçim
-    vur(savascı, büyücü, kritik_vurus)
-    if kritik_vurus:
-        print("""Savaşçı ⚔ Büyücüye Saldırdı ve kritik bir vuruş yaptı!
-        {} güçte bir vuruş yaptı.
-        Büyücünün kalan canı: {}
-        """.format(savascı["güc"], büyücü["can"]))
+while warrior["health"] > 0 and wizard["health"] > 0:
+    input("Press enter to attack!")
+    critical_hit = random.choice([True, False])
+    attack(warrior, wizard, critical_hit)
+    if critical_hit:
+        print("""Warrior ⚔ Attacked Wizard and made a critical hit!
+        Dealt {} power of damage.
+        Wizard's remaining health: {}
+        """.format(warrior["power"], wizard["health"]))
     else:
-        print("""Savaşçı ⚔ Büyücüye Saldırdı.
-        {} güçte bir vuruş yaptı.
-        Büyücünün kalan canı: {}
-        """.format(savascı["güc"], büyücü["can"]))
+        print("""Warrior ⚔ Attacked Wizard.
+        Dealt {} power of damage.
+        Wizard's remaining health: {}
+        """.format(warrior["power"], wizard["health"]))
 
-    if büyücü["can"] <= 0:
-        print("Büyücü öldü! Savaşçı kazandı.")
+    if wizard["health"] <= 0:
+        print("Wizard is dead! Warrior wins.")
         break
 
-    input("Vurmak için enter'a basınız!")
-    büyü_kalkanı_kullansın = random.choice([True, False])  # Büyü kalkanını kullanma kararı
-    büyücü["büyü_kalkanı"] = büyü_kalkanı_kullansın
-    kritik_vurus = random.choice([True, False])  # Kritik vuruş için rastgele seçim
-    vur(büyücü, savascı, kritik_vurus)
-    if kritik_vurus:
-        print("""Büyücü ⚔ Savaşçı Saldırdı ve kritik bir vuruş yaptı!
-        {} güçte bir vuruş yaptı.
-        Savaşçının kalan canı: {}
-        """.format(büyücü["güc"], savascı["can"]))
+    input("Press enter to attack!")
+    use_magic_shield = random.choice([True, False])
+    wizard["magic_shield"] = use_magic_shield
+    critical_hit = random.choice([True, False])
+    attack(wizard, warrior, critical_hit)
+    if critical_hit:
+        print("""Wizard ⚔ Attacked Warrior and made a critical hit!
+        Dealt {} power of damage.
+        Warrior's remaining health: {}
+        """.format(wizard["power"], warrior["health"]))
     else:
-        print("""Büyücü ⚔ Savaşçı Saldırdı.
-        {} güçte bir vuruş yaptı.
-        Savaşçının kalan canı: {}
-        """.format(büyücü["güc"], savascı["can"]))
+        print("""Wizard ⚔ Attacked Warrior.
+        Dealt {} power of damage.
+        Warrior's remaining health: {}
+        """.format(wizard["power"], warrior["health"]))
 
-    if savascı["can"] <= 0:
-        print("Savaşçı öldü! Büyücü kazandı.")
+    if warrior["health"] <= 0:
+        print("Warrior is dead! Wizard wins.")
         break
